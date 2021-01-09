@@ -11,13 +11,13 @@ Elixir client for GoTrue, an open source authentication service that supports ma
 
 # Why?
 
-[GoTrue](https://github.com/netlify/gotrue) is a way of doing authentication by delagating the work to separate service. It has a very slim HTTP API, requiring little maintance. It's also a polyglot auth solution.
+[GoTrue](https://github.com/netlify/gotrue) is a way of doing authentication by delagating the work to a separate service. It has a very slim HTTP API, so less code to maintain. It's also a polyglot auth solution.
 
 It was developed by Netlify, though this version is being developed against the [supabase fork](https://github.com/supabase/gotrue)
 
-For many apps, [`mix.gen.auth`] is a great solution, but it requires a bit more work to setup and adjustments. For a small team, or for doing a quick experiment, offloading a task like auth reduces time to market.
+For many apps, [`phx_gen_auth`](https://github.com/aaronrenner/phx_gen_auth) is a great solution, but it requires a bit more work to setup and adjust. It does mean inheriting a bunch of code. For a small team, or for quick experimentation, offloading a task like auth removes a big friction and reduces time to market.
 
-This also makes it possibile to create a [supabase](https://supabase.io) client down the road.
+It also makes it possibile to create an Elixir [supabase](https://supabase.io) client down the road.
 
 ## Installation
 
