@@ -96,20 +96,18 @@ defmodule GoTrue do
   @doc "Refresh access token using a valid refresh token"
   @spec refresh_access_token(String.t()) :: {:ok, map()} | {:error, map}
   def refresh_access_token(refresh_token) do
-    case client() |> post("/token?grant_type=refresh_token", %{refresh_token: refresh_token}) do
-      {:ok, %{status: 204, body: json}} ->
-        {:ok, json}
-
-      {:ok, response} ->
-        {:error, format_error(response)}
-    end
+    grant_token(:refresh_token, %{refresh_token: refresh_token})
   end
 
   @doc "Sign in with email and password"
   @spec sign_in(%{required(:email) => String.t(), required(:password) => String.t()}) ::
           {:ok, map()} | {:error, map}
   def sign_in(credentials) do
-    case client() |> post("/token?grant_type=password", credentials) do
+    grant_token(:password, credentials)
+  end
+
+  defp grant_token(type, payload) do
+    case client() |> post("/token?grant_type=#{type}", payload) do
       {:ok, %{status: 204, body: json}} ->
         {:ok, json}
 
