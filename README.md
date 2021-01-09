@@ -50,7 +50,7 @@ Several options exist to create an account:
 
 ### Password based
 
-Pass credentials to `GoTrue.sign_up/1`, a new account will be created and a JWT access token.
+Pass credentials to `GoTrue.sign_up/1`, a new account will be created and a JWT token is returned.
 
 ```elixir
 GoTrue.sign_up(%{email: "user@example.com", password: "123456"})
