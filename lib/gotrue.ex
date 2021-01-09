@@ -105,6 +105,18 @@ defmodule GoTrue do
     end
   end
 
+  @doc "Update user info using JWT"
+  @spec update_user(String.t(), map()) :: {:ok, map} | {:error, map}
+  def update_user(jwt, info) do
+    case client(jwt) |> put("/user", info) do
+      {:ok, %{status: 200, body: json}} ->
+        {:ok, parse_user(json)}
+
+      {:ok, response} ->
+        {:error, format_error(response)}
+    end
+  end
+
   defp client(access_token \\ @access_token) do
     middleware = [
       {Tesla.Middleware.BaseUrl, @base_url},

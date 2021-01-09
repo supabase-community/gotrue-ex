@@ -186,7 +186,11 @@ defmodule GoTrueTest do
   describe "get_user/1" do
     test "with invalid params" do
       mock(fn
-        %{url: "http://auth.example.com/user", headers: [authorization: "Bearer secret-token"]} ->
+        %{
+          method: :get,
+          url: "http://auth.example.com/user",
+          headers: [authorization: "Bearer secret-token"]
+        } ->
           json(%{"msg" => "invalid token"}, status: 422)
       end)
 
@@ -196,11 +200,47 @@ defmodule GoTrueTest do
 
     test "with valid params" do
       mock(fn
-        %{url: "http://auth.example.com/user", headers: [authorization: "Bearer secret-token"]} ->
+        %{
+          method: :get,
+          url: "http://auth.example.com/user",
+          headers: [authorization: "Bearer secret-token"]
+        } ->
           json(%{"email" => "user@example.com"})
       end)
 
       assert GoTrue.get_user("secret-token") == {:ok, %{"email" => "user@example.com"}}
+    end
+  end
+
+  describe "update_user/1" do
+    test "with invalid params" do
+      mock(fn
+        %{
+          method: :put,
+          url: "http://auth.example.com/user",
+          headers: [{"content-type", "application/json"}, authorization: "Bearer secret-token"],
+          body: ~s|{"data":{"name":"Josh"}}|
+        } ->
+          json(%{"msg" => "invalid token"}, status: 422)
+      end)
+
+      assert GoTrue.update_user("secret-token", %{data: %{name: "Josh"}}) ==
+               {:error, %{code: 422, message: "invalid token"}}
+    end
+
+    test "with valid params" do
+      mock(fn
+        %{
+          method: :put,
+          url: "http://auth.example.com/user",
+          headers: [{"content-type", "application/json"}, authorization: "Bearer secret-token"],
+          body: ~s|{"data":{"name":"Josh"}}|
+        } ->
+          json(%{"email" => "user@example.com"})
+      end)
+
+      assert GoTrue.update_user("secret-token", %{data: %{name: "Josh"}}) ==
+               {:ok, %{"email" => "user@example.com"}}
     end
   end
 end
