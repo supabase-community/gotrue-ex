@@ -148,6 +148,35 @@ defmodule GoTrueTest do
     end
   end
 
+  describe "sign_out/1" do
+    test "with invalid params" do
+      mock(fn
+        %{
+          method: :post,
+          url: "http://auth.example.com/logout",
+          headers: [{"content-type", "application/json"}, authorization: "Bearer secret-token"]
+        } ->
+          json(%{"msg" => "invalid token"}, status: 422)
+      end)
+
+      assert GoTrue.sign_out("secret-token") ==
+               {:error, %{code: 422, message: "invalid token"}}
+    end
+
+    test "with valid params" do
+      mock(fn
+        %{
+          method: :post,
+          url: "http://auth.example.com/logout",
+          headers: [{"content-type", "application/json"}, authorization: "Bearer secret-token"]
+        } ->
+          json(%{}, status: 204)
+      end)
+
+      assert GoTrue.sign_out("secret-token") == :ok
+    end
+  end
+
   describe "invite/1" do
     setup do
       mock(fn

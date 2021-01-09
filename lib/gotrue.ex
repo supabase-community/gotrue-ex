@@ -93,7 +93,19 @@ defmodule GoTrue do
     |> URI.to_string()
   end
 
-  @doc "Get user info using JWT"
+  @doc "Sign out user using a valid JWT"
+  @spec sign_out(String.t()) :: :ok | {:error, map}
+  def sign_out(jwt) do
+    case client(jwt) |> post("/logout", %{}) do
+      {:ok, %{status: 204}} ->
+        :ok
+
+      {:ok, response} ->
+        {:error, format_error(response)}
+    end
+  end
+
+  @doc "Get user info using a valid JWT"
   @spec get_user(String.t()) :: {:ok, map} | {:error, map}
   def get_user(jwt) do
     case client(jwt) |> get("/user") do
@@ -105,7 +117,7 @@ defmodule GoTrue do
     end
   end
 
-  @doc "Update user info using JWT"
+  @doc "Update user info using a valid JWT"
   @spec update_user(String.t(), map()) :: {:ok, map} | {:error, map}
   def update_user(jwt, info) do
     case client(jwt) |> put("/user", info) do
