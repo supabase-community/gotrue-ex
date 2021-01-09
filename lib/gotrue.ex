@@ -3,7 +3,7 @@ defmodule GoTrue do
   Elixir wrapper for [GoTrue Authentication Service](https://github.com/supabase/gotrue).
   """
 
-  use Tesla
+  use Tesla, docs: false
 
   @base_url Application.get_env(:gotrue, :base_url, "http://0.0.0.0:9999")
   @access_token Application.get_env(:gotrue, :access_token)
