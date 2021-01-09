@@ -148,12 +148,44 @@ defmodule GoTrueTest do
     end
   end
 
+  describe "sign_in/1" do
+    test "with invalid params" do
+      mock(fn
+        %{
+          method: :post,
+          url: "http://auth.example.com/token?grant_type=password",
+          headers: [{"content-type", "application/json"}, authorization: "Bearer super-secret"],
+          body: ~s|{"email":"user@example.com","password":"12345"}|
+        } ->
+          json(%{"msg" => "invalid password"}, status: 422)
+      end)
+
+      assert GoTrue.sign_in(%{email: "user@example.com", password: "12345"}) ==
+               {:error, %{code: 422, message: "invalid password"}}
+    end
+
+    test "with valid params" do
+      mock(fn
+        %{
+          method: :post,
+          url: "http://auth.example.com/token?grant_type=password",
+          headers: [{"content-type", "application/json"}, authorization: "Bearer super-secret"],
+          body: ~s|{"email":"user@example.com","password":"12345"}|
+        } ->
+          json(%{"access_token" => "1234"}, status: 204)
+      end)
+
+      assert GoTrue.sign_in(%{email: "user@example.com", password: "12345"}) ==
+               {:ok, %{"access_token" => "1234"}}
+    end
+  end
+
   describe "refresh_access_token/1" do
     test "with invalid params" do
       mock(fn
         %{
           method: :post,
-          url: "http://auth.example.com/token",
+          url: "http://auth.example.com/token?grant_type=refresh_token",
           headers: [{"content-type", "application/json"}, authorization: "Bearer super-secret"],
           body: ~s|{"refresh_token":"refresh-token"}|
         } ->
@@ -168,7 +200,7 @@ defmodule GoTrueTest do
       mock(fn
         %{
           method: :post,
-          url: "http://auth.example.com/token",
+          url: "http://auth.example.com/token?grant_type=refresh_token",
           headers: [{"content-type", "application/json"}, authorization: "Bearer super-secret"],
           body: ~s|{"refresh_token":"refresh-token"}|
         } ->
