@@ -1,4 +1,4 @@
-defmodule Gotrue.MixProject do
+defmodule GoTrue.MixProject do
   use Mix.Project
 
   def project do

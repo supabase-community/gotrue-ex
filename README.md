@@ -1,4 +1,4 @@
-# Gotrue
+# GoTrue
 
 **TODO: Add description**
 
