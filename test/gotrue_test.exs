@@ -177,4 +177,9 @@ defmodule GoTrueTest do
              }) == {:ok, %{"email" => "user@example.com"}}
     end
   end
+
+  test "url_for_provider/1" do
+    assert GoTrue.url_for_provider("google") ==
+             "http://auth.example.com/authorize?provider=google"
+  end
 end

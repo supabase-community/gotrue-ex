@@ -5,11 +5,11 @@ defmodule GoTrue do
 
   use Tesla
 
-  plug Tesla.Middleware.BaseUrl, Application.get_env(:gotrue, :base_url, "http://0.0.0.0:9999")
+  @base_url Application.get_env(:gotrue, :base_url, "http://0.0.0.0:9999")
+  @access_token Application.get_env(:gotrue, :access_token)
 
-  plug Tesla.Middleware.Headers,
-    authorization: "Bearer #{Application.get_env(:gotrue, :access_token)}"
-
+  plug Tesla.Middleware.BaseUrl, @base_url
+  plug Tesla.Middleware.Headers, authorization: "Bearer #{@access_token}"
   plug Tesla.Middleware.JSON
 
   @doc "Get environment settings for the GoTrue server"
@@ -87,6 +87,14 @@ defmodule GoTrue do
       {:ok, response} ->
         {:error, format_error(response)}
     end
+  end
+
+  @doc "Generate a URL for authorizing with an OAUTH2 provider"
+  @spec url_for_provider(String.t()) :: String.t()
+  def url_for_provider(provider) do
+    @base_url
+    |> URI.merge("authorize?provider=#{provider}")
+    |> URI.to_string()
   end
 
   defp parse_user(user) do
