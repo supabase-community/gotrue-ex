@@ -182,4 +182,25 @@ defmodule GoTrueTest do
     assert GoTrue.url_for_provider("google") ==
              "http://auth.example.com/authorize?provider=google"
   end
+
+  describe "get_user/1" do
+    test "with invalid params" do
+      mock(fn
+        %{url: "http://auth.example.com/user", headers: [authorization: "Bearer secret-token"]} ->
+          json(%{"msg" => "invalid token"}, status: 422)
+      end)
+
+      assert GoTrue.get_user("secret-token") ==
+               {:error, %{code: 422, message: "invalid token"}}
+    end
+
+    test "with valid params" do
+      mock(fn
+        %{url: "http://auth.example.com/user", headers: [authorization: "Bearer secret-token"]} ->
+          json(%{"email" => "user@example.com"})
+      end)
+
+      assert GoTrue.get_user("secret-token") == {:ok, %{"email" => "user@example.com"}}
+    end
+  end
 end

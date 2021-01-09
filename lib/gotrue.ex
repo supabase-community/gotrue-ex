@@ -8,14 +8,10 @@ defmodule GoTrue do
   @base_url Application.get_env(:gotrue, :base_url, "http://0.0.0.0:9999")
   @access_token Application.get_env(:gotrue, :access_token)
 
-  plug Tesla.Middleware.BaseUrl, @base_url
-  plug Tesla.Middleware.Headers, authorization: "Bearer #{@access_token}"
-  plug Tesla.Middleware.JSON
-
   @doc "Get environment settings for the GoTrue server"
   @spec settings() :: map
   def settings do
-    {:ok, %{status: 200, body: json}} = get("/settings")
+    {:ok, %{status: 200, body: json}} = client() |> get("/settings")
 
     json
   end
@@ -34,7 +30,7 @@ defmodule GoTrue do
       |> Map.take([:email, :password, :data, :provider])
       |> Map.merge(%{aud: credentials[:audience]})
 
-    case post("/signup", payload) do
+    case client() |> post("/signup", payload) do
       {:ok, %{status: 200, body: json}} ->
         {:ok,
          %{
@@ -53,7 +49,7 @@ defmodule GoTrue do
   @doc "Send a password recovery email"
   @spec recover(String.t()) :: :ok | {:error, map}
   def recover(email) do
-    case post("/recover", %{email: email}) do
+    case client() |> post("/recover", %{email: email}) do
       {:ok, %{status: 200}} ->
         :ok
 
@@ -68,7 +64,7 @@ defmodule GoTrue do
           data: map()
         }) :: map
   def invite(invitation) do
-    case post("/invite", invitation) do
+    case client() |> post("/invite", invitation) do
       {:ok, %{status: 200, body: json}} ->
         {:ok, parse_user(json)}
 
@@ -80,7 +76,7 @@ defmodule GoTrue do
   @doc "Send a magic link (passwordless login)"
   @spec send_magic_link(String.t()) :: :ok | {:error, map}
   def send_magic_link(email) do
-    case post("/magiclink", %{email: email}) do
+    case client() |> post("/magiclink", %{email: email}) do
       {:ok, %{status: 200}} ->
         :ok
 
@@ -95,6 +91,28 @@ defmodule GoTrue do
     @base_url
     |> URI.merge("authorize?provider=#{provider}")
     |> URI.to_string()
+  end
+
+  @doc "Get user info using JWT"
+  @spec get_user(String.t()) :: {:ok, map} | {:error, map}
+  def get_user(jwt) do
+    case client(jwt) |> get("/user") do
+      {:ok, %{status: 200, body: json}} ->
+        {:ok, parse_user(json)}
+
+      {:ok, response} ->
+        {:error, format_error(response)}
+    end
+  end
+
+  defp client(access_token \\ @access_token) do
+    middleware = [
+      {Tesla.Middleware.BaseUrl, @base_url},
+      Tesla.Middleware.JSON,
+      {Tesla.Middleware.Headers, authorization: "Bearer #{access_token}"}
+    ]
+
+    Tesla.client(middleware)
   end
 
   defp parse_user(user) do
