@@ -6,7 +6,7 @@ GoTrue is an open source authentication service that supports many methods of au
 
 - Classic email+password logins
 - Passwordless logins with magic links
-- OAUTH2 - Google, GitHub, BitBucket, GitLab, Facebook
+- OAUTH2 - Google, GitHub, BitBucket, GitLab, etc..
 - SAML (not yet implmented by this client)
 
 [Documentation](https://hexdocs.pm/gotrue)
