@@ -128,7 +128,7 @@ GoTrue.get_user(jwt)
 
 ## Updating user info
 
-Using a JWT, the user's data can be updated by calling `GoTrue.update_user/1`
+Using a JWT, the user's data can be updated by calling `GoTrue.update_user/2`
 
 ```elixir
 GoTrue.update_user(jwt, %{data: %{favorite_language: "elixir"}})
