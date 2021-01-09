@@ -108,7 +108,7 @@ defmodule GoTrue do
 
   defp grant_token(type, payload) do
     case client() |> post("/token?grant_type=#{type}", payload) do
-      {:ok, %{status: 204, body: json}} ->
+      {:ok, %{status: 200, body: json}} ->
         {:ok, json}
 
       {:ok, response} ->

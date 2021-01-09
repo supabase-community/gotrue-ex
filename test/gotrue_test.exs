@@ -172,7 +172,7 @@ defmodule GoTrueTest do
           headers: [{"content-type", "application/json"}, authorization: "Bearer super-secret"],
           body: ~s|{"email":"user@example.com","password":"12345"}|
         } ->
-          json(%{"access_token" => "1234"}, status: 204)
+          json(%{"access_token" => "1234"})
       end)
 
       assert GoTrue.sign_in(%{email: "user@example.com", password: "12345"}) ==
@@ -204,7 +204,7 @@ defmodule GoTrueTest do
           headers: [{"content-type", "application/json"}, authorization: "Bearer super-secret"],
           body: ~s|{"refresh_token":"refresh-token"}|
         } ->
-          json(%{"access_token" => "1234"}, status: 204)
+          json(%{"access_token" => "1234"})
       end)
 
       assert GoTrue.refresh_access_token("refresh-token") == {:ok, %{"access_token" => "1234"}}
