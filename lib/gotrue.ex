@@ -6,7 +6,10 @@ defmodule GoTrue do
   use Tesla
 
   plug Tesla.Middleware.BaseUrl, Application.get_env(:gotrue, :base_url, "http://0.0.0.0:9999")
-  plug Tesla.Middleware.Headers, [authorization: "Bearer #{Application.get_env(:gotrue, :access_token)}"]
+
+  plug Tesla.Middleware.Headers,
+    authorization: "Bearer #{Application.get_env(:gotrue, :access_token)}"
+
   plug Tesla.Middleware.JSON
 
   @doc "Get environment settings for the GoTrue server"
@@ -56,6 +59,18 @@ defmodule GoTrue do
     case post("/invite", invitation) do
       {:ok, %{status: 200, body: json}} ->
         {:ok, parse_user(json)}
+
+      {:ok, response} ->
+        {:error, format_error(response)}
+    end
+  end
+
+  @doc "Send a magic link (passwordless login)"
+  @spec send_magic_link(String.t()) :: :ok | {:error, map}
+  def send_magic_link(email) do
+    case post("/magiclink", %{email: email}) do
+      {:ok, %{status: 200}} ->
+        :ok
 
       {:ok, response} ->
         {:error, format_error(response)}

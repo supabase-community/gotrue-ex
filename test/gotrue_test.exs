@@ -3,26 +3,12 @@ defmodule GoTrueTest do
 
   import Tesla.Mock
 
-  setup do
+  test "settings/0" do
     mock(fn
       %{method: :get, url: "http://auth.example.com/settings"} ->
         json(%{"a_setting" => 1234})
-
-      %{
-        method: :post,
-        url: "http://auth.example.com/invite",
-        body: ~s|{"email":"existing@example.com"}|
-      } ->
-        json(%{"msg" => "already registered"}, status: 422)
-
-      %{method: :post, url: "http://auth.example.com/invite"} ->
-        json(%{"email" => "user@example.com"})
     end)
 
-    :ok
-  end
-
-  test "settings/0" do
     assert GoTrue.settings() == %{"a_setting" => 1234}
   end
 
@@ -120,7 +106,44 @@ defmodule GoTrueTest do
     end
   end
 
+  describe "send_magic_link/1" do
+    test "valid params" do
+      mock(fn
+        %{method: :post, url: "http://auth.example.com/magiclink"} ->
+          json(%{})
+      end)
+
+      assert GoTrue.send_magic_link("user@example.com") == :ok
+    end
+
+    test "invalid params" do
+      mock(fn
+        %{method: :post, url: "http://auth.example.com/magiclink"} ->
+          json(%{msg: "oops"}, status: 422)
+      end)
+
+      assert GoTrue.send_magic_link("") ==
+               {:error, %{message: "oops", code: 422}}
+    end
+  end
+
   describe "invite/1" do
+    setup do
+      mock(fn
+        %{
+          method: :post,
+          url: "http://auth.example.com/invite",
+          body: ~s|{"email":"existing@example.com"}|
+        } ->
+          json(%{"msg" => "already registered"}, status: 422)
+
+        %{method: :post, url: "http://auth.example.com/invite"} ->
+          json(%{"email" => "user@example.com"})
+      end)
+
+      :ok
+    end
+
     test "with invalid params" do
       assert GoTrue.invite(%{email: "existing@example.com"}) ==
                {:error, %{code: 422, message: "already registered"}}
