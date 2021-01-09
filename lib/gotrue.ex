@@ -50,6 +50,18 @@ defmodule GoTrue do
     end
   end
 
+  @doc "Send a password recovery email"
+  @spec recover(String.t()) :: :ok | {:error, map}
+  def recover(email) do
+    case post("/recover", %{email: email}) do
+      {:ok, %{status: 200}} ->
+        :ok
+
+      {:ok, response} ->
+        {:error, format_error(response)}
+    end
+  end
+
   @doc "Invite a new user to join"
   @spec invite(%{
           required(:email) => String.t(),

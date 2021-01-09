@@ -106,6 +106,27 @@ defmodule GoTrueTest do
     end
   end
 
+  describe "recover/1" do
+    test "valid params" do
+      mock(fn
+        %{method: :post, url: "http://auth.example.com/recover"} ->
+          json(%{})
+      end)
+
+      assert GoTrue.recover("user@example.com") == :ok
+    end
+
+    test "invalid params" do
+      mock(fn
+        %{method: :post, url: "http://auth.example.com/recover"} ->
+          json(%{msg: "oops"}, status: 422)
+      end)
+
+      assert GoTrue.recover("") ==
+               {:error, %{message: "oops", code: 422}}
+    end
+  end
+
   describe "send_magic_link/1" do
     test "valid params" do
       mock(fn
