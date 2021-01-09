@@ -1,6 +1,8 @@
 # GoTrue
 
-Elixir client for GoTrue, an open source authentication service that supports many methods of authentication:
+An Elixir client for GoTrue.
+
+GoTrue is an open source authentication service that supports many methods of authentication:
 
 - Classic email+password logins
 - Passwordless logins with magic links
