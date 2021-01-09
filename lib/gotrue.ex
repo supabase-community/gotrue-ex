@@ -93,6 +93,18 @@ defmodule GoTrue do
     |> URI.to_string()
   end
 
+  @doc "Refresh access token using a valid refresh token"
+  @spec refresh_access_token(String.t()) :: {:ok, map()} | {:error, map}
+  def refresh_access_token(refresh_token) do
+    case client() |> post("/token", %{refresh_token: refresh_token}) do
+      {:ok, %{status: 204, body: json}} ->
+        {:ok, json}
+
+      {:ok, response} ->
+        {:error, format_error(response)}
+    end
+  end
+
   @doc "Sign out user using a valid JWT"
   @spec sign_out(String.t()) :: :ok | {:error, map}
   def sign_out(jwt) do

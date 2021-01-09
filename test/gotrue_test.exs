@@ -148,18 +148,52 @@ defmodule GoTrueTest do
     end
   end
 
+  describe "refresh_access_token/1" do
+    test "with invalid params" do
+      mock(fn
+        %{
+          method: :post,
+          url: "http://auth.example.com/token",
+          headers: [{"content-type", "application/json"}, authorization: "Bearer super-secret"],
+          body: ~s|{"refresh_token":"refresh-token"}|
+        } ->
+          json(%{"msg" => "invalid token"}, status: 422)
+      end)
+
+      assert GoTrue.refresh_access_token("refresh-token") ==
+               {:error, %{code: 422, message: "invalid token"}}
+    end
+
+    test "with valid params" do
+      mock(fn
+        %{
+          method: :post,
+          url: "http://auth.example.com/token",
+          headers: [{"content-type", "application/json"}, authorization: "Bearer super-secret"],
+          body: ~s|{"refresh_token":"refresh-token"}|
+        } ->
+          json(%{"access_token" => "1234"}, status: 204)
+      end)
+
+      assert GoTrue.refresh_access_token("refresh-token") == {:ok, %{"access_token" => "1234"}}
+    end
+  end
+
   describe "sign_out/1" do
     test "with invalid params" do
       mock(fn
         %{
           method: :post,
           url: "http://auth.example.com/logout",
-          headers: [{"content-type", "application/json"}, authorization: "Bearer secret-token"]
+          headers: [
+            {"content-type", "application/json"},
+            authorization: "Bearer jwt-access-token"
+          ]
         } ->
           json(%{"msg" => "invalid token"}, status: 422)
       end)
 
-      assert GoTrue.sign_out("secret-token") ==
+      assert GoTrue.sign_out("jwt-access-token") ==
                {:error, %{code: 422, message: "invalid token"}}
     end
 
@@ -168,12 +202,15 @@ defmodule GoTrueTest do
         %{
           method: :post,
           url: "http://auth.example.com/logout",
-          headers: [{"content-type", "application/json"}, authorization: "Bearer secret-token"]
+          headers: [
+            {"content-type", "application/json"},
+            authorization: "Bearer jwt-access-token"
+          ]
         } ->
           json(%{}, status: 204)
       end)
 
-      assert GoTrue.sign_out("secret-token") == :ok
+      assert GoTrue.sign_out("jwt-access-token") == :ok
     end
   end
 
@@ -218,12 +255,12 @@ defmodule GoTrueTest do
         %{
           method: :get,
           url: "http://auth.example.com/user",
-          headers: [authorization: "Bearer secret-token"]
+          headers: [authorization: "Bearer jwt-access-token"]
         } ->
           json(%{"msg" => "invalid token"}, status: 422)
       end)
 
-      assert GoTrue.get_user("secret-token") ==
+      assert GoTrue.get_user("jwt-access-token") ==
                {:error, %{code: 422, message: "invalid token"}}
     end
 
@@ -232,12 +269,12 @@ defmodule GoTrueTest do
         %{
           method: :get,
           url: "http://auth.example.com/user",
-          headers: [authorization: "Bearer secret-token"]
+          headers: [authorization: "Bearer jwt-access-token"]
         } ->
           json(%{"email" => "user@example.com"})
       end)
 
-      assert GoTrue.get_user("secret-token") == {:ok, %{"email" => "user@example.com"}}
+      assert GoTrue.get_user("jwt-access-token") == {:ok, %{"email" => "user@example.com"}}
     end
   end
 
@@ -247,13 +284,16 @@ defmodule GoTrueTest do
         %{
           method: :put,
           url: "http://auth.example.com/user",
-          headers: [{"content-type", "application/json"}, authorization: "Bearer secret-token"],
+          headers: [
+            {"content-type", "application/json"},
+            authorization: "Bearer jwt-access-token"
+          ],
           body: ~s|{"data":{"name":"Josh"}}|
         } ->
           json(%{"msg" => "invalid token"}, status: 422)
       end)
 
-      assert GoTrue.update_user("secret-token", %{data: %{name: "Josh"}}) ==
+      assert GoTrue.update_user("jwt-access-token", %{data: %{name: "Josh"}}) ==
                {:error, %{code: 422, message: "invalid token"}}
     end
 
@@ -262,13 +302,16 @@ defmodule GoTrueTest do
         %{
           method: :put,
           url: "http://auth.example.com/user",
-          headers: [{"content-type", "application/json"}, authorization: "Bearer secret-token"],
+          headers: [
+            {"content-type", "application/json"},
+            authorization: "Bearer jwt-access-token"
+          ],
           body: ~s|{"data":{"name":"Josh"}}|
         } ->
           json(%{"email" => "user@example.com"})
       end)
 
-      assert GoTrue.update_user("secret-token", %{data: %{name: "Josh"}}) ==
+      assert GoTrue.update_user("jwt-access-token", %{data: %{name: "Josh"}}) ==
                {:ok, %{"email" => "user@example.com"}}
     end
   end
