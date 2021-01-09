@@ -136,7 +136,7 @@ GoTrue.update_user(jwt, %{data: %{favorite_language: "elixir"}})
 
 ## Invitations
 
-User's can be invited by passing their email address to `GoTrue.invite/1`, this sends an email to the user with a link.
+Users can be invited by passing their email address to `GoTrue.invite/1`, this sends them an email with a completion link.
 
 ```elixir
 GoTrue.invite(%{email: "user@example.com"})
