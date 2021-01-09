@@ -9,6 +9,7 @@ defmodule GoTrue do
   plug Tesla.Middleware.JSON
 
   @doc "Get environment settings for the GoTrue server"
+  @type settings() :: map
   def settings do
     {:ok, %{status: 200, body: json}} = get("/settings")
 
