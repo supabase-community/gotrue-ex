@@ -1,13 +1,23 @@
 # GoTrue
 
-Elixir client for GoTrue, an authentication service that supports many methods of authentication.
+Elixir client for GoTrue, an authentication service that supports many methods of authentication with a small code footprint.
 
-- Email/password logins
+- Email+password logins
 - Passwordless logins with magic links
 - OAUTH2 - Google, GitHub, BitBucket, GitLab, Facebook
 - SAML (not yet implmented by this client)
 
 [Documentation](https://hexdocs.pm/gotrue)
+
+# Why?
+
+[GoTrue](https://github.com/netlify/gotrue) is a way of doing authentication by delagating the work to seperate service. It has a very slim HTTP API, requiring little maintance. It's also a polyglot auth solution.
+
+It was developed by Netlify, but this is being developed against the [supabase fork](https://github.com/supabase/gotrue)
+
+I think [`mix.gen.auth`] is a great solution too for serious apps, but it requires a bit more work to setup and adjust. For a small team, or for doing quick experiment, offloading a task like auth improves time to markte.
+
+This also makes it possibile to create a [supabase](https://supabase.io) client down the road.
 
 ## Installation
 
@@ -21,11 +31,14 @@ def deps do
 end
 ```
 
-In your `config/dev.exs` & `config/prod.exs`, configure your GoTrue
+In your `config/dev.exs` & `config/prod.exs`, configure settings: 
 
 ```elixir
 config :gotrue,
+  # URL to you GoTrue instance
   base_url: "http://0.0.0.0:9999",
+
+  # secret access token
   access_token: "your-super-secret-operator-token"
 ```
 
@@ -33,19 +46,19 @@ config :gotrue,
 
 ## Creating a user account
 
-Several options exist to create an account
+Several options exist to create an account:
 
 ### Password based
 
-Pass credentials to `GoTrue.sign_up/1`, it will create a new account and return back a JWT access token.
+Pass credentials to `GoTrue.sign_up/1`, a new account will be created and a JWT access token.
 
 ```elixir
 GoTrue.sign_up(%{email: "user@example.com", password: "123456"})
 ```
 
-### OAUTH 
+### OAUTH2
 
-Call `GoTrue.url_for_provider/1`, it returns a URL you can redirect the user to: 
+Oauth is performed on the client by redirecting the user. To get the redirection URL, call `GoTrue.url_for_provider/1`: 
 
 ```elixir
 GoTrue.url_for_provider(:google)
@@ -57,15 +70,17 @@ GoTrue.url_for_provider(:facebook)
 
 ### Magic Link
 
-User's can login without password by requesting a magic link:
+Users can login without password, by requesting a magic link:
 
 ```elixir
 GoTrue.send_magic_link("user@example.com")
 ```
 
+That sends them an email with a link to login. The link will contain the `access_token` & `refresh_token`.
+
 ## Sign in
 
-If you are using password logins, sign in by passing the `email` & `password` to `GoTrue.sign_in/1`, it returns a JWT
+If you're using password logins, sign in a user by passing the `email` & `password` to `GoTrue.sign_in/1`, it returns a JWT
 
 ```elixir
 GoTrue.sign_in(%{email: "user@example.com", password: "12345"})
@@ -73,7 +88,7 @@ GoTrue.sign_in(%{email: "user@example.com", password: "12345"})
 
 ## Refreshing JWT
 
-The JWT expires based on your GoTrue server's settings. To refresh it, pass the `refresh_token` to `GoTrue.refresh_access_token/1`
+Each JWT expires based on your GoTrue server's settings. To refresh it, pass the `refresh_token` to `GoTrue.refresh_access_token/1`
 
 ```elixir
 # first get an access token, there are many ways:
@@ -90,28 +105,28 @@ def controller_action(conn, %{access_token: jwt, refresh_token: refresh_token}) 
 end
 
 # refresh it before it expires
-%{access_token: new_jwt, refresh_token: new_refresh_token} = GoTrue.refresh_access_token(refresh_token)
+%{access_token: new_jwt} = GoTrue.refresh_access_token(refresh_token)
 ```
 
 ## Sign out
 
-The JWT can be revoked, effectively signing out the user, by called `GoTrue.sign_out/1`
+To revoke a JWT, call `GoTrue.sign_out/1`
 
 ```elixir
 GoTrue.sign_out(jwt)
 ```
 
-## Get user info
+## Getting user info
 
-Using a JWT the user data can be accessed by calling `GoTrue.get_user/1`
+The user's info can be accessed by calling `GoTrue.get_user/1` with their current JWT:
 
 ```elixir
 GoTrue.get_user(jwt)
 ```
 
-## Update user info
+## Updating user info
 
-Using a JWT, user data can be updated by calling `GoTrue.update_user/1`
+Using a JWT, the user's data can be updated by calling `GoTrue.update_user/1`
 
 ```elixir
 GoTrue.update_user(jwt, %{data: %{favorite_language: "elixir"}})
