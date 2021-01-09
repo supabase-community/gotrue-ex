@@ -16,6 +16,7 @@ defmodule GoTrue.MixProject do
         licenses: ["MIT"],
         links: %{GitHub: @source_url}
       ],
+      description: "GoTrue client for Elixir"
     ]
   end
 
