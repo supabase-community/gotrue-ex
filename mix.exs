@@ -21,7 +21,9 @@ defmodule Gotrue.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:tesla, "~> 1.4"}
+      {:tesla, "~> 1.4"},
+      {:hackney, "~> 1.16.0"},
+      {:jason, ">= 1.0.0"}
     ]
   end
 end
