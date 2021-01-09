@@ -39,11 +39,34 @@ defmodule GoTrue do
            expires_in: json["expires_in"],
            token_type: json["token_type"],
            refresh_token: json["refresh_token"],
-           user: json["user"]
+           user: parse_user(json["user"])
          }}
 
-      {:ok, %{status: status, body: json}} ->
-        {:error, %{code: status, message: json["msg"]}}
+      {:ok, response} ->
+        {:error, format_error(response)}
     end
+  end
+
+  @doc "Invite a new user to join"
+  @spec invite(%{
+          required(:email) => String.t(),
+          data: map()
+        }) :: map
+  def invite(invitation) do
+    case post("/invite", invitation) do
+      {:ok, %{status: 200, body: json}} ->
+        {:ok, parse_user(json)}
+
+      {:ok, response} ->
+        {:error, format_error(response)}
+    end
+  end
+
+  defp parse_user(user) do
+    user
+  end
+
+  defp format_error(%{status: status, body: json}) do
+    %{code: status, message: json["msg"]}
   end
 end
