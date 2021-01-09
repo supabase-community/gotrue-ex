@@ -1,6 +1,6 @@
-defmodule Gotrue do
+defmodule GoTrue do
   @moduledoc """
-  Documentation for `Gotrue`.
+  Documentation for `GoTrue`.
   """
 
   @doc """
@@ -8,7 +8,7 @@ defmodule Gotrue do
 
   ## Examples
 
-      iex> Gotrue.hello()
+      iex> GoTrue.hello()
       :world
 
   """

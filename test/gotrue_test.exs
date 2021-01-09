@@ -1,8 +1,8 @@
-defmodule GotrueTest do
+defmodule GoTrueTest do
   use ExUnit.Case
-  doctest Gotrue
+  doctest GoTrue
 
   test "greets the world" do
-    assert Gotrue.hello() == :world
+    assert GoTrue.hello() == :world
   end
 end
