@@ -30,7 +30,9 @@ defmodule GoTrue do
       |> Map.take([:email, :password, :data, :provider])
       |> Map.merge(%{aud: credentials[:audience]})
 
-    case client() |> post("/signup", payload) do
+    client()
+    |> post("/signup", payload)
+    |> case do
       {:ok, %{status: 200, body: json}} ->
         {:ok,
          %{
@@ -49,7 +51,9 @@ defmodule GoTrue do
   @doc "Send a password recovery email"
   @spec recover(String.t()) :: :ok | {:error, map}
   def recover(email) do
-    case client() |> post("/recover", %{email: email}) do
+    client()
+    |> post("/recover", %{email: email})
+    |> case do
       {:ok, %{status: 200}} ->
         :ok
 
@@ -64,7 +68,9 @@ defmodule GoTrue do
           data: map()
         }) :: map
   def invite(invitation) do
-    case client() |> post("/invite", invitation) do
+    client()
+    |> post("/invite", invitation)
+    |> case do
       {:ok, %{status: 200, body: json}} ->
         {:ok, parse_user(json)}
 
@@ -76,7 +82,9 @@ defmodule GoTrue do
   @doc "Send a magic link (passwordless login)"
   @spec send_magic_link(String.t()) :: :ok | {:error, map}
   def send_magic_link(email) do
-    case client() |> post("/magiclink", %{email: email}) do
+    client()
+    |> post("/magiclink", %{email: email})
+    |> case do
       {:ok, %{status: 200}} ->
         :ok
 
@@ -107,7 +115,9 @@ defmodule GoTrue do
   end
 
   defp grant_token(type, payload) do
-    case client() |> post("/token?grant_type=#{type}", payload) do
+    client()
+    |> post("/token?grant_type=#{type}", payload)
+    |> case do
       {:ok, %{status: 200, body: json}} ->
         {:ok, json}
 
@@ -119,7 +129,10 @@ defmodule GoTrue do
   @doc "Sign out user using a valid JWT"
   @spec sign_out(String.t()) :: :ok | {:error, map}
   def sign_out(jwt) do
-    case client(jwt) |> post("/logout", %{}) do
+    jwt
+    |> client()
+    |> post("/logout", %{})
+    |> case do
       {:ok, %{status: 204}} ->
         :ok
 
@@ -131,7 +144,10 @@ defmodule GoTrue do
   @doc "Get user info using a valid JWT"
   @spec get_user(String.t()) :: {:ok, map} | {:error, map}
   def get_user(jwt) do
-    case client(jwt) |> get("/user") do
+    jwt
+    |> client()
+    |> get("/user")
+    |> case do
       {:ok, %{status: 200, body: json}} ->
         {:ok, parse_user(json)}
 
@@ -143,7 +159,10 @@ defmodule GoTrue do
   @doc "Update user info using a valid JWT"
   @spec update_user(String.t(), map()) :: {:ok, map} | {:error, map}
   def update_user(jwt, info) do
-    case client(jwt) |> put("/user", info) do
+    jwt
+    |> client()
+    |> put("/user", info)
+    |> case do
       {:ok, %{status: 200, body: json}} ->
         {:ok, parse_user(json)}
 
