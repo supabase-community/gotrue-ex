@@ -1,6 +1,6 @@
 defmodule GoTrue do
   @moduledoc """
-  Elixir wrapper for [GoTrue Authentication Service](https://github.com/supabase/gotrue).
+  Elixir wrapper for the [GoTrue authentication service](https://github.com/supabase/gotrue).
   """
 
   import Tesla, only: [get: 2, post: 3, put: 3]
@@ -8,12 +8,12 @@ defmodule GoTrue do
   @base_url Application.get_env(:gotrue, :base_url, "http://0.0.0.0:9999")
   @access_token Application.get_env(:gotrue, :access_token)
 
-  @doc "Get environment settings for the GoTrue server"
+  @doc "Get environment settings for the server"
   @spec settings() :: map
   def settings do
-    {:ok, %{status: 200, body: json}} = client() |> get("/settings")
-
-    json
+    client()
+    |> get("/settings")
+    |> handle_response(200, fn %{body: json} -> json end)
   end
 
   @doc "Sign up a new user with email and password"
@@ -32,20 +32,7 @@ defmodule GoTrue do
 
     client()
     |> post("/signup", payload)
-    |> case do
-      {:ok, %{status: 200, body: json}} ->
-        {:ok,
-         %{
-           access_token: json["access_token"],
-           expires_in: json["expires_in"],
-           token_type: json["token_type"],
-           refresh_token: json["refresh_token"],
-           user: parse_user(json["user"])
-         }}
-
-      {:ok, response} ->
-        {:error, format_error(response)}
-    end
+    |> handle_response(200, fn %{body: json} -> {:ok, json} end)
   end
 
   @doc "Send a password recovery email"
@@ -53,13 +40,7 @@ defmodule GoTrue do
   def recover(email) do
     client()
     |> post("/recover", %{email: email})
-    |> case do
-      {:ok, %{status: 200}} ->
-        :ok
-
-      {:ok, response} ->
-        {:error, format_error(response)}
-    end
+    |> handle_response()
   end
 
   @doc "Invite a new user to join"
@@ -70,13 +51,7 @@ defmodule GoTrue do
   def invite(invitation) do
     client()
     |> post("/invite", invitation)
-    |> case do
-      {:ok, %{status: 200, body: json}} ->
-        {:ok, parse_user(json)}
-
-      {:ok, response} ->
-        {:error, format_error(response)}
-    end
+    |> handle_response(200, &user_handler/1)
   end
 
   @doc "Send a magic link (passwordless login)"
@@ -84,13 +59,7 @@ defmodule GoTrue do
   def send_magic_link(email) do
     client()
     |> post("/magiclink", %{email: email})
-    |> case do
-      {:ok, %{status: 200}} ->
-        :ok
-
-      {:ok, response} ->
-        {:error, format_error(response)}
-    end
+    |> handle_response()
   end
 
   @doc "Generate a URL for authorizing with an OAUTH2 provider"
@@ -117,13 +86,7 @@ defmodule GoTrue do
   defp grant_token(type, payload) do
     client()
     |> post("/token?grant_type=#{type}", payload)
-    |> case do
-      {:ok, %{status: 200, body: json}} ->
-        {:ok, json}
-
-      {:ok, response} ->
-        {:error, format_error(response)}
-    end
+    |> handle_response(200, fn %{body: json} -> {:ok, json} end)
   end
 
   @doc "Sign out user using a valid JWT"
@@ -132,13 +95,7 @@ defmodule GoTrue do
     jwt
     |> client()
     |> post("/logout", %{})
-    |> case do
-      {:ok, %{status: 204}} ->
-        :ok
-
-      {:ok, response} ->
-        {:error, format_error(response)}
-    end
+    |> handle_response(204)
   end
 
   @doc "Get user info using a valid JWT"
@@ -147,13 +104,7 @@ defmodule GoTrue do
     jwt
     |> client()
     |> get("/user")
-    |> case do
-      {:ok, %{status: 200, body: json}} ->
-        {:ok, parse_user(json)}
-
-      {:ok, response} ->
-        {:error, format_error(response)}
-    end
+    |> handle_response(200, &user_handler/1)
   end
 
   @doc "Update user info using a valid JWT"
@@ -162,23 +113,17 @@ defmodule GoTrue do
     jwt
     |> client()
     |> put("/user", info)
-    |> case do
-      {:ok, %{status: 200, body: json}} ->
-        {:ok, parse_user(json)}
-
-      {:ok, response} ->
-        {:error, format_error(response)}
-    end
+    |> handle_response(200, &user_handler/1)
   end
 
   defp client(access_token \\ @access_token) do
-    middleware = [
+    middlewares = [
       {Tesla.Middleware.BaseUrl, @base_url},
       Tesla.Middleware.JSON,
       {Tesla.Middleware.Headers, authorization: "Bearer #{access_token}"}
     ]
 
-    Tesla.client(middleware)
+    Tesla.client(middlewares)
   end
 
   defp parse_user(user) do
@@ -187,5 +132,23 @@ defmodule GoTrue do
 
   defp format_error(%{status: status, body: json}) do
     %{code: status, message: json["msg"]}
+  end
+
+  defp default_handler(_response) do
+    :ok
+  end
+
+  defp user_handler(%{body: json}) do
+    {:ok, parse_user(json)}
+  end
+
+  defp handle_response({tag, response}, success \\ 200, fun \\ &default_handler/1) do
+    case {tag, response} do
+      {:ok, %{status: ^success}} ->
+        fun.(response)
+
+      {:ok, response} ->
+        {:error, format_error(response)}
+    end
   end
 end

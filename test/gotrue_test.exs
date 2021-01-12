@@ -60,11 +60,11 @@ defmodule GoTrueTest do
              }) ==
                {:ok,
                 %{
-                  access_token: "1234",
-                  expires_in: 60,
-                  refresh_token: "abcd",
-                  token_type: "bearer",
-                  user: %{}
+                  "access_token" => "1234",
+                  "expires_in" => 60,
+                  "refresh_token" => "abcd",
+                  "token_type" => "bearer",
+                  "user" => %{}
                 }}
     end
 
@@ -97,11 +97,11 @@ defmodule GoTrueTest do
              }) ==
                {:ok,
                 %{
-                  access_token: "1234",
-                  expires_in: 60,
-                  refresh_token: "abcd",
-                  token_type: "bearer",
-                  user: %{}
+                  "access_token" => "1234",
+                  "expires_in" => 60,
+                  "refresh_token" => "abcd",
+                  "token_type" => "bearer",
+                  "user" => %{}
                 }}
     end
   end
