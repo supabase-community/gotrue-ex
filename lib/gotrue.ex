@@ -7,6 +7,7 @@ defmodule GoTrue do
 
   @base_url Application.get_env(:gotrue, :base_url, "http://0.0.0.0:9999")
   @access_token Application.get_env(:gotrue, :access_token)
+  @auth_header Application.get_env(:gotrue, :auth_header, "apikey")
 
   @doc "Get environment settings for the server"
   @spec settings() :: map
@@ -120,10 +121,25 @@ defmodule GoTrue do
     middlewares = [
       {Tesla.Middleware.BaseUrl, @base_url},
       Tesla.Middleware.JSON,
-      {Tesla.Middleware.Headers, authorization: "Bearer #{access_token}"}
+      {Tesla.Middleware.Headers, [auth_header(@auth_header, access_token)]}
     ]
 
     Tesla.client(middlewares)
+  end
+
+  defp auth_header("authorization", access_token), do: {:Authorization, "Bearer #{access_token}"}
+  defp auth_header("apikey", access_token), do: {:apikey, access_token}
+
+  defp auth_header(header_key, access_token) when is_atom(header_key) do
+    header_key
+    |> Atom.to_string()
+    |> auth_header(access_token)
+  end
+
+  defp auth_header(header_key, access_token) do
+    header_key
+    |> String.downcase()
+    |> auth_header(access_token)
   end
 
   defp parse_user(user) do

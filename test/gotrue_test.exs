@@ -154,7 +154,10 @@ defmodule GoTrueTest do
         %{
           method: :post,
           url: "http://auth.example.com/token?grant_type=password",
-          headers: [{"content-type", "application/json"}, authorization: "Bearer super-secret"],
+          headers: [
+            {"content-type", "application/json"},
+            apikey: "super-secret"
+          ],
           body: ~s|{"email":"user@example.com","password":"12345"}|
         } ->
           json(%{"msg" => "invalid password"}, status: 422)
@@ -169,7 +172,10 @@ defmodule GoTrueTest do
         %{
           method: :post,
           url: "http://auth.example.com/token?grant_type=password",
-          headers: [{"content-type", "application/json"}, authorization: "Bearer super-secret"],
+          headers: [
+            {"content-type", "application/json"},
+            apikey: "super-secret"
+          ],
           body: ~s|{"email":"user@example.com","password":"12345"}|
         } ->
           json(%{"access_token" => "1234"})
@@ -186,7 +192,10 @@ defmodule GoTrueTest do
         %{
           method: :post,
           url: "http://auth.example.com/token?grant_type=refresh_token",
-          headers: [{"content-type", "application/json"}, authorization: "Bearer super-secret"],
+          headers: [
+            {"content-type", "application/json"},
+            apikey: "super-secret"
+          ],
           body: ~s|{"refresh_token":"refresh-token"}|
         } ->
           json(%{"msg" => "invalid token"}, status: 422)
@@ -201,7 +210,10 @@ defmodule GoTrueTest do
         %{
           method: :post,
           url: "http://auth.example.com/token?grant_type=refresh_token",
-          headers: [{"content-type", "application/json"}, authorization: "Bearer super-secret"],
+          headers: [
+            {"content-type", "application/json"},
+            apikey: "super-secret"
+          ],
           body: ~s|{"refresh_token":"refresh-token"}|
         } ->
           json(%{"access_token" => "1234"})
@@ -219,7 +231,7 @@ defmodule GoTrueTest do
           url: "http://auth.example.com/logout",
           headers: [
             {"content-type", "application/json"},
-            authorization: "Bearer jwt-access-token"
+            apikey: "jwt-access-token"
           ]
         } ->
           json(%{"msg" => "invalid token"}, status: 422)
@@ -236,7 +248,7 @@ defmodule GoTrueTest do
           url: "http://auth.example.com/logout",
           headers: [
             {"content-type", "application/json"},
-            authorization: "Bearer jwt-access-token"
+            apikey: "jwt-access-token"
           ]
         } ->
           json(%{}, status: 204)
@@ -287,7 +299,7 @@ defmodule GoTrueTest do
         %{
           method: :get,
           url: "http://auth.example.com/user",
-          headers: [authorization: "Bearer jwt-access-token"]
+          headers: [apikey: "jwt-access-token"]
         } ->
           json(%{"msg" => "invalid token"}, status: 422)
       end)
@@ -301,7 +313,7 @@ defmodule GoTrueTest do
         %{
           method: :get,
           url: "http://auth.example.com/user",
-          headers: [authorization: "Bearer jwt-access-token"]
+          headers: [apikey: "jwt-access-token"]
         } ->
           json(%{"email" => "user@example.com"})
       end)
@@ -318,7 +330,7 @@ defmodule GoTrueTest do
           url: "http://auth.example.com/user",
           headers: [
             {"content-type", "application/json"},
-            authorization: "Bearer jwt-access-token"
+            apikey: "jwt-access-token"
           ],
           body: ~s|{"data":{"name":"Josh"}}|
         } ->
@@ -336,7 +348,7 @@ defmodule GoTrueTest do
           url: "http://auth.example.com/user",
           headers: [
             {"content-type", "application/json"},
-            authorization: "Bearer jwt-access-token"
+            apikey: "jwt-access-token"
           ],
           body: ~s|{"data":{"name":"Josh"}}|
         } ->

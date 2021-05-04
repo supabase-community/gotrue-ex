@@ -42,6 +42,16 @@ config :gotrue,
 
   # The private access token
   access_token: "your-super-secret-operator-token"
+
+  # Request header to use to send the access_token
+  # e.g. for Netlify GoTrue set
+  # auth_header: :Authorization
+  #
+  # for Supabase
+  # auth_header: :apikey
+  #
+  # default is set to :apikey
+
 ```
 
 # Usage
