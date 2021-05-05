@@ -33,7 +33,7 @@ def deps do
 end
 ```
 
-In your `config/dev.exs` & `config/prod.exs`, configure settings: 
+In your `config/dev.exs` & `config/prod.exs`, configure settings:
 
 ```elixir
 config :gotrue,
@@ -42,15 +42,6 @@ config :gotrue,
 
   # The private access token
   access_token: "your-super-secret-operator-token"
-
-  # Request header to use to send the access_token
-  # e.g. for Netlify GoTrue set
-  # auth_header: :Authorization
-  #
-  # for Supabase
-  # auth_header: :apikey
-  #
-  # default is set to :apikey
 
 ```
 
@@ -70,7 +61,7 @@ GoTrue.sign_up(%{email: "user@example.com", password: "123456"})
 
 ### OAUTH2
 
-Oauth is performed on the client by redirecting the user. To get the redirection URL, call `GoTrue.url_for_provider/1`: 
+Oauth is performed on the client by redirecting the user. To get the redirection URL, call `GoTrue.url_for_provider/1`:
 
 ```elixir
 GoTrue.url_for_provider(:google)

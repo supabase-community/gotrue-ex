@@ -156,7 +156,8 @@ defmodule GoTrueTest do
           url: "http://auth.example.com/token?grant_type=password",
           headers: [
             {"content-type", "application/json"},
-            apikey: "super-secret"
+            apikey: "super-secret",
+            Authorization: "super-secret"
           ],
           body: ~s|{"email":"user@example.com","password":"12345"}|
         } ->
@@ -174,7 +175,8 @@ defmodule GoTrueTest do
           url: "http://auth.example.com/token?grant_type=password",
           headers: [
             {"content-type", "application/json"},
-            apikey: "super-secret"
+            apikey: "super-secret",
+            Authorization: "super-secret"
           ],
           body: ~s|{"email":"user@example.com","password":"12345"}|
         } ->
@@ -194,7 +196,8 @@ defmodule GoTrueTest do
           url: "http://auth.example.com/token?grant_type=refresh_token",
           headers: [
             {"content-type", "application/json"},
-            apikey: "super-secret"
+            apikey: "super-secret",
+            Authorization: "super-secret"
           ],
           body: ~s|{"refresh_token":"refresh-token"}|
         } ->
@@ -212,7 +215,8 @@ defmodule GoTrueTest do
           url: "http://auth.example.com/token?grant_type=refresh_token",
           headers: [
             {"content-type", "application/json"},
-            apikey: "super-secret"
+            apikey: "super-secret",
+            Authorization: "super-secret"
           ],
           body: ~s|{"refresh_token":"refresh-token"}|
         } ->
@@ -231,7 +235,8 @@ defmodule GoTrueTest do
           url: "http://auth.example.com/logout",
           headers: [
             {"content-type", "application/json"},
-            apikey: "jwt-access-token"
+            apikey: "super-secret",
+            Authorization: "jwt-access-token"
           ]
         } ->
           json(%{"msg" => "invalid token"}, status: 422)
@@ -248,7 +253,8 @@ defmodule GoTrueTest do
           url: "http://auth.example.com/logout",
           headers: [
             {"content-type", "application/json"},
-            apikey: "jwt-access-token"
+            apikey: "super-secret",
+            Authorization: "jwt-access-token"
           ]
         } ->
           json(%{}, status: 204)
@@ -299,7 +305,7 @@ defmodule GoTrueTest do
         %{
           method: :get,
           url: "http://auth.example.com/user",
-          headers: [apikey: "jwt-access-token"]
+          headers: [apikey: "super-secret", Authorization: "jwt-access-token"]
         } ->
           json(%{"msg" => "invalid token"}, status: 422)
       end)
@@ -313,7 +319,7 @@ defmodule GoTrueTest do
         %{
           method: :get,
           url: "http://auth.example.com/user",
-          headers: [apikey: "jwt-access-token"]
+          headers: [apikey: "super-secret", Authorization: "jwt-access-token"]
         } ->
           json(%{"email" => "user@example.com"})
       end)
@@ -330,7 +336,8 @@ defmodule GoTrueTest do
           url: "http://auth.example.com/user",
           headers: [
             {"content-type", "application/json"},
-            apikey: "jwt-access-token"
+            apikey: "super-secret",
+            Authorization: "jwt-access-token"
           ],
           body: ~s|{"data":{"name":"Josh"}}|
         } ->
@@ -348,7 +355,8 @@ defmodule GoTrueTest do
           url: "http://auth.example.com/user",
           headers: [
             {"content-type", "application/json"},
-            apikey: "jwt-access-token"
+            apikey: "super-secret",
+            Authorization: "jwt-access-token"
           ],
           body: ~s|{"data":{"name":"Josh"}}|
         } ->
