@@ -120,7 +120,7 @@ defmodule GoTrue do
     middlewares = [
       {Tesla.Middleware.BaseUrl, @base_url},
       Tesla.Middleware.JSON,
-      {Tesla.Middleware.Headers, [{:apikey, @access_token}, {:Authorization, access_token}]}
+      {Tesla.Middleware.Headers, [{:apikey, @access_token}, {:authorization, access_token}]}
     ]
 
     Tesla.client(middlewares)
