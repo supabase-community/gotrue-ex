@@ -6,7 +6,7 @@ defmodule GoTrue do
   import Tesla, only: [get: 2, post: 3, put: 3]
 
   @base_url Application.get_env(:gotrue, :base_url, "http://0.0.0.0:9999")
-  @access_token Application.get_env(:gotrue, :access_token)
+  @api_key Application.get_env(:gotrue, :access_token)
 
   @doc "Get environment settings for the server"
   @spec settings() :: map
@@ -116,11 +116,11 @@ defmodule GoTrue do
     |> handle_response(200, &user_handler/1)
   end
 
-  defp client(access_token \\ @access_token) do
+  defp client(access_token \\ @api_key) do
     middlewares = [
       {Tesla.Middleware.BaseUrl, @base_url},
       Tesla.Middleware.JSON,
-      {Tesla.Middleware.Headers, [{:apikey, @access_token}, {:authorization, access_token}]}
+      {Tesla.Middleware.Headers, [{:apikey, @api_key}, {:authorization, access_token}]}
     ]
 
     Tesla.client(middlewares)
