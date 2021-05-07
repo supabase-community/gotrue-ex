@@ -157,7 +157,7 @@ defmodule GoTrueTest do
           headers: [
             {"content-type", "application/json"},
             apikey: "super-secret",
-            authorization: "super-secret"
+            authorization: "Bearer super-secret"
           ],
           body: ~s|{"email":"user@example.com","password":"12345"}|
         } ->
@@ -176,7 +176,7 @@ defmodule GoTrueTest do
           headers: [
             {"content-type", "application/json"},
             apikey: "super-secret",
-            authorization: "super-secret"
+            authorization: "Bearer super-secret"
           ],
           body: ~s|{"email":"user@example.com","password":"12345"}|
         } ->
@@ -197,7 +197,7 @@ defmodule GoTrueTest do
           headers: [
             {"content-type", "application/json"},
             apikey: "super-secret",
-            authorization: "super-secret"
+            authorization: "Bearer super-secret"
           ],
           body: ~s|{"refresh_token":"refresh-token"}|
         } ->
@@ -215,8 +215,8 @@ defmodule GoTrueTest do
           url: "http://auth.example.com/token?grant_type=refresh_token",
           headers: [
             {"content-type", "application/json"},
-            apikey: "super-secret",
-            authorization: "super-secret"
+            {:apikey, "super-secret"},
+            {:authorization, "Bearer super-secret"}
           ],
           body: ~s|{"refresh_token":"refresh-token"}|
         } ->
@@ -234,9 +234,9 @@ defmodule GoTrueTest do
           method: :post,
           url: "http://auth.example.com/logout",
           headers: [
-            {"content-type", "application/json"},
-            apikey: "super-secret",
-            authorization: "jwt-access-token"
+            {:apikey, "super-secret"},
+            {:authorization, "Bearer jwt-access-token"},
+            {"content-type", "application/json"}
           ]
         } ->
           json(%{"msg" => "invalid token"}, status: 422)
@@ -252,9 +252,9 @@ defmodule GoTrueTest do
           method: :post,
           url: "http://auth.example.com/logout",
           headers: [
-            {"content-type", "application/json"},
-            apikey: "super-secret",
-            authorization: "jwt-access-token"
+            {:apikey, "super-secret"},
+            {:authorization, "Bearer jwt-access-token"},
+            {"content-type", "application/json"}
           ]
         } ->
           json(%{}, status: 204)
@@ -305,7 +305,7 @@ defmodule GoTrueTest do
         %{
           method: :get,
           url: "http://auth.example.com/user",
-          headers: [apikey: "super-secret", authorization: "jwt-access-token"]
+          headers: [apikey: "super-secret", authorization: "Bearer jwt-access-token"]
         } ->
           json(%{"msg" => "invalid token"}, status: 422)
       end)
@@ -319,7 +319,7 @@ defmodule GoTrueTest do
         %{
           method: :get,
           url: "http://auth.example.com/user",
-          headers: [apikey: "super-secret", authorization: "jwt-access-token"]
+          headers: [apikey: "super-secret", authorization: "Bearer jwt-access-token"]
         } ->
           json(%{"email" => "user@example.com"})
       end)
@@ -335,9 +335,9 @@ defmodule GoTrueTest do
           method: :put,
           url: "http://auth.example.com/user",
           headers: [
-            {"content-type", "application/json"},
-            apikey: "super-secret",
-            authorization: "jwt-access-token"
+            {:apikey, "super-secret"},
+            {:authorization, "Bearer jwt-access-token"},
+            {"content-type", "application/json"}
           ],
           body: ~s|{"data":{"name":"Josh"}}|
         } ->
@@ -354,9 +354,9 @@ defmodule GoTrueTest do
           method: :put,
           url: "http://auth.example.com/user",
           headers: [
-            {"content-type", "application/json"},
-            apikey: "super-secret",
-            authorization: "jwt-access-token"
+            {:apikey, "super-secret"},
+            {:authorization, "Bearer jwt-access-token"},
+            {"content-type", "application/json"}
           ],
           body: ~s|{"data":{"name":"Josh"}}|
         } ->
@@ -364,6 +364,26 @@ defmodule GoTrueTest do
       end)
 
       assert GoTrue.update_user("jwt-access-token", %{data: %{name: "Josh"}}) ==
+               {:ok, %{"email" => "user@example.com"}}
+    end
+
+    test "with valid params and different url" do
+      mock(fn
+        %{
+          method: :put,
+          url: "http://auth.another-domain.com/user",
+          headers: [
+            {:apikey, "super-secret-api-key"},
+            {:authorization, "Bearer jwt-access-token"},
+            {"content-type", "application/json"}
+          ],
+          body: ~s|{"data":{"name":"Josh"}}|
+        } ->
+          json(%{"email" => "user@example.com"})
+      end)
+
+      assert GoTrue.client("http://auth.another-domain.com", "super-secret-api-key")
+             |> GoTrue.update_user("jwt-access-token", %{data: %{name: "Josh"}}) ==
                {:ok, %{"email" => "user@example.com"}}
     end
   end

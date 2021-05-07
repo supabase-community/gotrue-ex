@@ -33,6 +33,8 @@ def deps do
 end
 ```
 
+### Optional
+
 In your `config/dev.exs` & `config/prod.exs`, configure settings:
 
 ```elixir
@@ -56,7 +58,8 @@ Several options exist to create an account:
 Pass credentials to `GoTrue.sign_up/1`, a new account will be created and a JWT token is returned.
 
 ```elixir
-GoTrue.sign_up(%{email: "user@example.com", password: "123456"})
+GoTrue.client("https://ttlzokxvatvexhtzrpsm.supabase.co/auth/v1", "my-supabase-project-api-key")
+|> GoTrue.sign_up(%{email: "user@example.com", password: "123456"})
 ```
 
 ### OAUTH2
@@ -76,7 +79,8 @@ GoTrue.url_for_provider(:facebook)
 Users can login without password, by requesting a magic link:
 
 ```elixir
-GoTrue.send_magic_link("user@example.com")
+GoTrue.client("https://ttlzokxvatvexhtzrpsm.supabase.co/auth/v1", "my-supabase-project-api-key")
+|> GoTrue.send_magic_link("user@example.com")
 ```
 
 That sends them an email with a link to login. The link will contain the `access_token` & `refresh_token`.
@@ -86,7 +90,8 @@ That sends them an email with a link to login. The link will contain the `access
 If you're using password logins, sign in a user by passing the `email` & `password` to `GoTrue.sign_in/1`, it returns a JWT
 
 ```elixir
-GoTrue.sign_in(%{email: "user@example.com", password: "12345"})
+GoTrue.client("https://ttlzokxvatvexhtzrpsm.supabase.co/auth/v1", "my-supabase-project-api-key")
+|> GoTrue.sign_in(%{email: "user@example.com", password: "12345"})
 ```
 
 ## Refreshing JWT
