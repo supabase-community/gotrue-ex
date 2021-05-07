@@ -33,15 +33,16 @@ def deps do
 end
 ```
 
-In your `config/dev.exs` & `config/prod.exs`, configure settings: 
+In your `config/dev.exs` & `config/prod.exs`, configure settings:
 
 ```elixir
 config :gotrue,
   # URL to your GoTrue instance
   base_url: "http://0.0.0.0:9999",
 
-  # The private access token
-  access_token: "your-super-secret-operator-token"
+  # The project's API key
+  api_key: "your-super-secret-operator-token"
+
 ```
 
 # Usage
@@ -60,7 +61,7 @@ GoTrue.sign_up(%{email: "user@example.com", password: "123456"})
 
 ### OAUTH2
 
-Oauth is performed on the client by redirecting the user. To get the redirection URL, call `GoTrue.url_for_provider/1`: 
+Oauth is performed on the client by redirecting the user. To get the redirection URL, call `GoTrue.url_for_provider/1`:
 
 ```elixir
 GoTrue.url_for_provider(:google)
