@@ -40,8 +40,8 @@ config :gotrue,
   # URL to your GoTrue instance
   base_url: "http://0.0.0.0:9999",
 
-  # The private access token
-  access_token: "your-super-secret-operator-token"
+  # The project's API key
+  api_key: "your-super-secret-operator-token"
 
 ```
 

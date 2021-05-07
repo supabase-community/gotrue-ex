@@ -6,7 +6,7 @@ defmodule GoTrue do
   import Tesla, only: [get: 2, post: 3, put: 3]
 
   @base_url Application.get_env(:gotrue, :base_url, "http://0.0.0.0:9999")
-  @api_key Application.get_env(:gotrue, :access_token)
+  @api_key Application.get_env(:gotrue, :api_key)
 
   @doc "Get environment settings for the server"
   @spec settings() :: map
