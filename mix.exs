@@ -39,7 +39,7 @@ defmodule GoTrue.MixProject do
   defp deps do
     [
       {:tesla, "~> 1.4"},
-      {:hackney, "~> 1.16.0"},
+      {:hackney, "~> 1.17.0"},
       {:jason, ">= 1.0.0"},
       {:ex_doc, github: "elixir-lang/ex_doc", only: :dev}
     ]
