@@ -15,7 +15,7 @@ defmodule GoTrue do
     middlewares = [
       {Tesla.Middleware.BaseUrl, base_url},
       Tesla.Middleware.JSON,
-      {Tesla.Middleware.Headers, [{:apikey, api_key}, {:authorization, "Bearer #{api_key}"}]}
+      {Tesla.Middleware.Headers, [{"apikey", api_key}, {"authorization", "Bearer #{api_key}"}]}
     ]
 
     Tesla.client(middlewares)
@@ -221,7 +221,7 @@ defmodule GoTrue do
       {{Tesla.Middleware.Headers, headers}, middleware} ->
         Tesla.client([
           {Tesla.Middleware.Headers,
-           update_in(headers, [:authorization], fn _ -> "Bearer #{value}" end)}
+           List.keystore(headers, "authorization", 0, {"authorization", "Bearer #{value}"})}
           | middleware
         ])
 
@@ -229,7 +229,7 @@ defmodule GoTrue do
         middleware = Tesla.Client.middleware(client)
 
         Tesla.client([
-          {Tesla.Middleware.Headers, {:authorization, "Bearer #{value}"}} | middleware
+          {Tesla.Middleware.Headers, {"authorization", "Bearer #{value}"}} | middleware
         ])
     end
   end
