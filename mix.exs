@@ -48,6 +48,7 @@ defmodule GoTrue.MixProject do
       {:hackney, "~> 1.18.2"},
       {:jason, ">= 1.4.1"},
       {:joken, "~> 2.6", only: :test},
+      {:faker, "~> 0.17", only: :test},
       {:ex_doc, "~> 0.30.6", only: :dev}
     ]
   end

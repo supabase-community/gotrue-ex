@@ -6,6 +6,7 @@ defmodule GoTrue.ConnCase do
   using do
     quote do
       import GoTrue
+      import GoTrue.ConnCase
     end
   end
 
@@ -17,5 +18,12 @@ defmodule GoTrue.ConnCase do
       )
 
     {:ok, conn: GoTrue.client("http://localhost:9998", auth_admin_jwt)}
+  end
+
+  def mock_credentials() do
+    %{
+      email: Faker.Internet.email(),
+      password: Faker.Util.format("%6b")
+    }
   end
 end
