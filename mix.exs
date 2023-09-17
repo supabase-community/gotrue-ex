@@ -38,10 +38,10 @@ defmodule GoTrue.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:tesla, "~> 1.4"},
-      {:hackney, "~> 1.17.0"},
-      {:jason, ">= 1.0.0"},
-      {:ex_doc, github: "elixir-lang/ex_doc", only: :dev}
+      {:tesla, "~> 1.7.0"},
+      {:hackney, "~> 1.18.2"},
+      {:jason, ">= 1.4.1"},
+      {:ex_doc, "~> 0.30.6", only: :dev}
     ]
   end
 end
