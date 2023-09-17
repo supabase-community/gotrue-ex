@@ -7,7 +7,7 @@ defmodule GoTrue.MixProject do
     [
       app: :gotrue,
       version: "0.2.1",
-      elixir: "~> 1.11",
+      elixir: "~> 1.13",
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       deps: deps(),
