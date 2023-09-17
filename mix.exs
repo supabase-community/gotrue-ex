@@ -8,6 +8,7 @@ defmodule GoTrue.MixProject do
       app: :gotrue,
       version: "0.2.1",
       elixir: "~> 1.11",
+      elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       docs: docs(),
@@ -16,7 +17,8 @@ defmodule GoTrue.MixProject do
         licenses: ["MIT"],
         links: %{GitHub: @source_url}
       ],
-      description: "GoTrue client for Elixir"
+      description: "GoTrue client for Elixir",
+      aliases: aliases()
     ]
   end
 
@@ -35,13 +37,32 @@ defmodule GoTrue.MixProject do
     ]
   end
 
+  # Specifies which paths to compile per environment.
+  defp elixirc_paths(:test), do: ["lib", "test/support"]
+  defp elixirc_paths(_), do: ["lib"]
+
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
       {:tesla, "~> 1.7.0"},
       {:hackney, "~> 1.18.2"},
       {:jason, ">= 1.4.1"},
+      {:joken, "~> 2.6", only: :test},
       {:ex_doc, "~> 0.30.6", only: :dev}
+    ]
+  end
+
+  defp aliases do
+    [
+      "test.setup": [
+        "cmd docker compose -f infra/docker-compose.yml down",
+        "cmd docker compose -f infra/docker-compose.yml pull",
+        "cmd docker compose -f infra/docker-compose.yml up -d",
+        "cmd sleep 30"
+      ],
+      "test.cleanup": [
+        "cmd docker compose -f infra/docker-compose.yml down -v --remove-orphans"
+      ]
     ]
   end
 end
